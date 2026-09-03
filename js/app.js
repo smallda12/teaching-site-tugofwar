@@ -890,7 +890,16 @@
         return;
       }
       $("#課文標題").textContent = UNIT.課文.標題 || "";
-      $("#課文內容").innerHTML = UNIT.課文.段落.map((p) => `<p class="課文段">${p}</p>`).join("");
+      /* 每段各自一顆「再聽一次」，可以單獨重複播放；下面另外還有一顆
+         「朗讀全文」播放連續完整版，兩種語音各自獨立產生，不是切段落。 */
+      $("#課文內容").innerHTML = UNIT.課文.段落.map((p) => `
+        <div class="課文段落">
+          <p class="課文段">${p.文}</p>
+          <button class="次要鈕 課文段鈕" data-音="${p.語音}">🔊 再聽一次</button>
+        </div>`).join("");
+      $$(".課文段鈕", $("#課文內容")).forEach((b) => {
+        b.onclick = () => 語音.說話(b.dataset.音);
+      });
       $("#鈕課文朗讀").onclick = () => 語音.說話(UNIT.課文.語音);
     }
 
