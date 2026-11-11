@@ -938,7 +938,12 @@
       const 段 = $(`.課文段落[data-段="${x.段}"]`, $("#課文內容"));
       const 圖 = 段 && $(".課文圖", 段);
       if (圖 && 圖.getAttribute("src") !== x.圖) { 圖.src = x.圖; 圖.alt = x.文; }
-      if (捲動 && 段) 段.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      /* 捲到該段時要停在頂端綠色導覽列（sticky）下面，否則圖的上半部會被導覽列蓋住（2026-11-11 老師回報） */
+      if (捲動 && 段) {
+        const 頂 = ($(".導覽")?.getBoundingClientRect().bottom || 0) + 12;
+        const r = 段.getBoundingClientRect();
+        if (r.top < 頂 || r.bottom > innerHeight) window.scrollTo({ top: scrollY + r.top - 頂, behavior: "smooth" });
+      }
     }
     const 清標亮 = () => $$(".課文句.播放中", $("#課文內容")).forEach((s) => s.classList.remove("播放中"));
 
